@@ -1,2 +1,3 @@
 run_dht11.sh
 __pycache__
+.env

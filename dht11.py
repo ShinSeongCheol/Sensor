@@ -1,12 +1,26 @@
 import Adafruit_DHT      # 라이브러리 불러오기
+import database
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 sensor = Adafruit_DHT.DHT11     #  sensor 객체 생성
 
 pin = 17                        # Data핀의 GPIO핀 넘버
-while True:
-    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)   # 센서 객체에서 센서 값(ㅇ노도, 습도) 읽기
- 
-    if humidity is not None and temperature is not None:   #습도 및 온도 값이 모두 제대로 읽혔다면 
-        print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity))  # 온도, 습도 순으로 표시
-    else:                                                  # 에러가 생겼다면 
-        print('Failed to get reading. Try again!')        #  에러 표시
+
+scheduler = BlockingScheduler()
+
+@scheduler.scheduled_job(trigger='cron', minute='*')
+def read():
+    """
+    온도 습도 측정
+    """
+
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+
+    if humidity is not None and temperature is not None:
+        temp = "{0:0.1f}".format(temperature)
+        hum = "{0:0.1f}".format(humidity)
+
+        database.insertDht11Log(temp,hum)
+
+
+scheduler.start()

@@ -1,11 +1,15 @@
 import pymysql
+from dotenv import load_dotenv
+import os
 
-host = "127.0.0.1"
-user = "seongcheol"
-password = "seongcheol"
-db = "Sensors"
-charset='utf8'
-port = 13306
+load_dotenv()
+
+host = os.environ.get("host")
+user = os.environ.get("user")
+password = os.environ.get("password")
+db = os.environ.get("db")
+charset = os.environ.get("charset")
+port = int(os.environ.get("port"))
 
 def insertDht11Log(*args):
     con = pymysql.connect(host=host, user=user, password=password, db=db, charset=charset, port=port)
